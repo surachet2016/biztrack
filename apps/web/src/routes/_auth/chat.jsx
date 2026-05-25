@@ -65,8 +65,13 @@ function ChatPage() {
       }
       return res.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       qc.invalidateQueries({ queryKey: ['chat-history'] });
+      // If AI extracted a transaction, refresh dashboard stats immediately
+      if (data?.extracted_transaction) {
+        qc.invalidateQueries({ queryKey: ['transactions'] });
+        qc.invalidateQueries({ queryKey: ['product-alerts'] });
+      }
       setInput('');
       setPendingImage(null);
     },

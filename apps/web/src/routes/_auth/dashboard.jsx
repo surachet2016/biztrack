@@ -24,11 +24,15 @@ function DashboardPage() {
   const { data: txData } = useQuery({
     queryKey: ['transactions', 'summary'],
     queryFn: () => api.get('/api/transactions?page=1'),
+    refetchOnWindowFocus: true,
+    staleTime: 0,
   });
 
   const { data: alertData } = useQuery({
     queryKey: ['product-alerts'],
     queryFn: () => api.get('/api/products/alerts'),
+    refetchOnWindowFocus: true,
+    staleTime: 0,
   });
 
   const income = txData?.totals?.income || 0;
