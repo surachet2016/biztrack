@@ -1,0 +1,11 @@
+{
+  "name": "@biztrack/shared",
+  "version": "0.0.1",
+  "private": true,
+  "main": "./index.js",
+  "exports": {
+    ".": "./index.js",
+    "./constants": "./constants.js",
+    "./utils": "./utils.js"
+  }
+}
