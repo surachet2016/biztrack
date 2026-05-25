@@ -26,6 +26,13 @@ supabase.auth.onAuthStateChange(async (event, session) => {
   _user = session?.user || null;
   if (_user) {
     try {
+      // For OAuth logins (Google), auto-create profile on first sign-in
+      if (event === 'SIGNED_IN') {
+        await api.post('/api/auth/profile', {
+          name: _user.user_metadata?.full_name || _user.user_metadata?.name || '',
+          avatar_url: _user.user_metadata?.avatar_url || '',
+        });
+      }
       const data = await api.get('/api/auth/me');
       _profile = data.profile;
       _subscription = data.subscription;
@@ -42,6 +49,16 @@ supabase.auth.onAuthStateChange(async (event, session) => {
 
 export async function signIn(email, password) {
   const { error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) throw error;
+}
+
+export async function signInWithGoogle() {
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: `${window.location.origin}/auth/callback`,
+    },
+  });
   if (error) throw error;
 }
 

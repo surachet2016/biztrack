@@ -68,15 +68,19 @@ function SubscriptionPage() {
         <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6 flex items-center gap-3">
           <CheckCircle className="w-5 h-5 text-green-600" />
           <div>
-            <p className="font-medium text-green-800">แพ็กเกจปัจจุบัน: {PACKAGES[subscription.plan]?.nameTh}</p>
-            <p className="text-green-600 text-xs">หมดอายุ: {new Date(subscription.expires_at).toLocaleDateString('th-TH')}</p>
+            <p className="font-medium text-green-800">แพ็กเกจปัจจุบัน: {PACKAGES[subscription.plan]?.nameTh || 'ฟรี'}</p>
+            {subscription.plan === 'free' ? (
+              <p className="text-green-600 text-xs">ใช้งานได้ตลอดไป • อัปเกรดเพื่อปลดล็อคฟีเจอร์เพิ่มเติม</p>
+            ) : (
+              <p className="text-green-600 text-xs">หมดอายุ: {new Date(subscription.expires_at).toLocaleDateString('th-TH')}</p>
+            )}
           </div>
         </div>
       )}
 
       {step === 'select' && (
         <div className="grid md:grid-cols-3 gap-4 mb-6">
-          {Object.values(PACKAGES).map((pkg) => (
+          {Object.values(PACKAGES).filter(pkg => pkg.id !== 'free').map((pkg) => (
             <div
               key={pkg.id}
               onClick={() => setSelectedPlan(pkg.id)}

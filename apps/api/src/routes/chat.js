@@ -25,8 +25,16 @@ chat.post('/', async (c) => {
   const body = await c.req.json();
   const { content, type = 'text', attachment_url, slow_moving_products } = body;
 
-  // Check plan limits for image
+  // Check plan limits
   const limits = getPlanLimits(subscription?.plan);
+
+  if (type === 'voice' && !limits.voice) {
+    return c.json({
+      error: 'แพ็กเกจฟรีไม่รองรับการส่งเสียง กรุณาอัปเกรดเป็นแพ็กเกจ Basic ขึ้นไป',
+      code: 'PLAN_LIMIT'
+    }, 403);
+  }
+
   if (type === 'image' && !limits.image) {
     return c.json({
       error: 'แพ็กเกจของคุณไม่รองรับการส่งรูปภาพ กรุณาอัปเกรดเป็นแพ็กเกจ Pro',
@@ -56,19 +64,33 @@ chat.post('/', async (c) => {
     systemPrompt += `\n\nสินค้าที่ขายไม่ออกในระบบ:\n${list}\nกรุณาแจ้งเตือนเจ้าของร้านและให้คำแนะนำด้วย`;
   }
 
-  // Call Claude API
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
+  // Call AI via OpenRouter (supports Claude, GPT, Gemini, etc.)
+  const messages = [];
+  if (systemPrompt) messages.push({ role: 'system', content: systemPrompt });
+  if (type === 'image' && attachment_url) {
+    messages.push({
+      role: 'user',
+      content: [
+        { type: 'image_url', image_url: { url: attachment_url } },
+        { type: 'text', text: content || 'วิเคราะห์ใบเสร็จนี้และแยกรายการรายรับ-รายจ่าย' },
+      ],
+    });
+  } else {
+    messages.push({ role: 'user', content });
+  }
+
+  const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'x-api-key': c.env.ANTHROPIC_API_KEY,
-      'anthropic-version': '2023-06-01',
+      'Authorization': `Bearer ${c.env.OPENROUTER_API_KEY}`,
+      'HTTP-Referer': c.env.FRONTEND_URL || 'https://biztrack.pages.dev',
+      'X-Title': 'BizTrack',
     },
     body: JSON.stringify({
-      model: 'claude-opus-4-5',
+      model: 'anthropic/claude-haiku-4-5',
       max_tokens: 1024,
-      system: systemPrompt,
-      messages: [userMessage],
+      messages,
     }),
   });
 
@@ -78,7 +100,7 @@ chat.post('/', async (c) => {
   }
 
   const aiData = await response.json();
-  const assistantContent = aiData.content[0]?.text || '';
+  const assistantContent = aiData.choices?.[0]?.message?.content || '';
 
   // Save user message
   await supabase.from('chat_messages').insert({

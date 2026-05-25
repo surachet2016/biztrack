@@ -9,7 +9,7 @@ ENVIRONMENT = "development"
 # Production secrets (set via: wrangler secret put SECRET_NAME)
 # SUPABASE_URL
 # SUPABASE_SERVICE_ROLE_KEY
-# ANTHROPIC_API_KEY
+# OPENROUTER_API_KEY
 
 [env.production]
 name = "biztrack-api"

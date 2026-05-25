@@ -1,5 +1,18 @@
 // Subscription Packages
 export const PACKAGES = {
+  free: {
+    id: 'free',
+    name: 'Free',
+    nameTh: 'ฟรี',
+    price: 0,
+    period: 'forever',
+    periodTh: 'ตลอดไป',
+    features: [
+      'แชทด้วยข้อความ (Text Chat)',
+      'ดูแดชบอร์ดพื้นฐาน',
+    ],
+    limits: { image: false, receiptAnalysis: false, voice: false },
+  },
   basic: {
     id: 'basic',
     name: 'Basic',

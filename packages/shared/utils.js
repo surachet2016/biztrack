@@ -55,9 +55,10 @@ export function isSubscriptionActive(subscription) {
  */
 export function getPlanLimits(plan) {
   const limits = {
-    basic: { image: false, receiptAnalysis: false },
-    pro: { image: true, receiptAnalysis: true },
-    annual: { image: true, receiptAnalysis: true },
+    free:   { image: false, receiptAnalysis: false, voice: false },
+    basic:  { image: false, receiptAnalysis: false, voice: true },
+    pro:    { image: true,  receiptAnalysis: true,  voice: true },
+    annual: { image: true,  receiptAnalysis: true,  voice: true },
   };
-  return limits[plan] || limits.basic;
+  return limits[plan] || limits.free;
 }

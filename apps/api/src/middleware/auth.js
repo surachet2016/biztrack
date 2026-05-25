@@ -44,19 +44,42 @@ export async function adminMiddleware(c, next) {
 }
 
 /**
- * Require active subscription (plan: any)
+ * Require active subscription (plan: any, including free)
+ * Auto-creates free subscription if user has none
  */
 export async function requireSubscription(c, next) {
   const user = c.get('user');
   const supabase = c.get('supabase');
 
-  const { data: sub } = await supabase
-    .from('subscriptions')
-    .select('*')
-    .eq('user_id', user.id)
-    .eq('status', 'active')
-    .gte('expires_at', new Date().toISOString())
-    .single();
+  const findActiveSub = async () => {
+    const { data } = await supabase
+      .from('subscriptions')
+      .select('*')
+      .eq('user_id', user.id)
+      .eq('status', 'active')
+      .gte('expires_at', new Date().toISOString())
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single();
+    return data;
+  };
+
+  let sub = await findActiveSub();
+
+  if (!sub) {
+    // Auto-create 30-day free trial (ignore insert error from race condition)
+    const expiry = new Date();
+    expiry.setDate(expiry.getDate() + 30);
+    await supabase.from('subscriptions').insert({
+      user_id: user.id,
+      plan: 'free',
+      status: 'active',
+      starts_at: new Date().toISOString(),
+      expires_at: expiry.toISOString(),
+    });
+    // Re-query — works even if insert failed due to race (another request already created it)
+    sub = await findActiveSub();
+  }
 
   if (!sub) {
     return c.json({ error: 'No active subscription', code: 'NO_SUBSCRIPTION' }, 403);

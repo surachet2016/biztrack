@@ -3,5 +3,6 @@ dist
 .turbo
 .env
 .env.local
+.dev.vars
 .wrangler
 *.tsbuildinfo

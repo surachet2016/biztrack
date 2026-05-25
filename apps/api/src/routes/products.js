@@ -70,25 +70,29 @@ products.get('/recommend', async (c) => {
     `${p.name} (ราคา ${p.price} บาท, stock ${p.stock_qty} ชิ้น, ไม่มีการขาย ${p.days_no_sale || '?'} วัน)`
   ).join('\n');
 
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
+  const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'x-api-key': c.env.ANTHROPIC_API_KEY,
-      'anthropic-version': '2023-06-01',
+      'Authorization': `Bearer ${c.env.OPENROUTER_API_KEY}`,
+      'HTTP-Referer': c.env.FRONTEND_URL || 'https://biztrack.pages.dev',
+      'X-Title': 'BizTrack',
     },
     body: JSON.stringify({
-      model: 'claude-haiku-4-5',
+      model: 'anthropic/claude-haiku-4-5',
       max_tokens: 512,
-      messages: [{
-        role: 'user',
-        content: `สินค้าต่อไปนี้ขายไม่ค่อยได้:\n${productList}\n\nกรุณาให้คำแนะนำการขายที่เป็นประโยชน์ เช่น การตั้งราคา โปรโมชั่น หรือการจัดแสดงสินค้า ตอบเป็นภาษาไทย`,
-      }],
+      messages: [
+        { role: 'system', content: 'คุณคือที่ปรึกษาธุรกิจสำหรับร้านค้าขนาดเล็กในประเทศไทย' },
+        {
+          role: 'user',
+          content: `สินค้าต่อไปนี้ขายไม่ค่อยได้:\n${productList}\n\nกรุณาให้คำแนะนำการขายที่เป็นประโยชน์ เช่น การตั้งราคา โปรโมชั่น หรือการจัดแสดงสินค้า ตอบเป็นภาษาไทย`,
+        },
+      ],
     }),
   });
 
   const aiData = await response.json();
-  const recommendations = aiData.content[0]?.text || '';
+  const recommendations = aiData.choices?.[0]?.message?.content || '';
 
   return c.json({ recommendations, slow_products: slowProducts });
 });

@@ -14,6 +14,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as AdminRouteImport } from './routes/_admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as AuthZakatRouteImport } from './routes/_auth/zakat'
 import { Route as AuthSubscriptionRouteImport } from './routes/_auth/subscription'
 import { Route as AuthProductsRouteImport } from './routes/_auth/products'
@@ -45,6 +46,11 @@ const AdminRoute = AdminRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthCallbackRoute = AuthCallbackRouteImport.update({
+  id: '/auth/callback',
+  path: '/auth/callback',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthZakatRoute = AuthZakatRouteImport.update({
@@ -103,6 +109,7 @@ export interface FileRoutesByFullPath {
   '/products': typeof AuthProductsRoute
   '/subscription': typeof AuthSubscriptionRoute
   '/zakat': typeof AuthZakatRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/admin/payments': typeof AdminAdminPaymentsRoute
   '/admin/settings': typeof AdminAdminSettingsRoute
   '/admin/users': typeof AdminAdminUsersRoute
@@ -117,6 +124,7 @@ export interface FileRoutesByTo {
   '/products': typeof AuthProductsRoute
   '/subscription': typeof AuthSubscriptionRoute
   '/zakat': typeof AuthZakatRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/admin/payments': typeof AdminAdminPaymentsRoute
   '/admin/settings': typeof AdminAdminSettingsRoute
   '/admin/users': typeof AdminAdminUsersRoute
@@ -134,6 +142,7 @@ export interface FileRoutesById {
   '/_auth/products': typeof AuthProductsRoute
   '/_auth/subscription': typeof AuthSubscriptionRoute
   '/_auth/zakat': typeof AuthZakatRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/_admin/admin/payments': typeof AdminAdminPaymentsRoute
   '/_admin/admin/settings': typeof AdminAdminSettingsRoute
   '/_admin/admin/users': typeof AdminAdminUsersRoute
@@ -150,6 +159,7 @@ export interface FileRouteTypes {
     | '/products'
     | '/subscription'
     | '/zakat'
+    | '/auth/callback'
     | '/admin/payments'
     | '/admin/settings'
     | '/admin/users'
@@ -164,6 +174,7 @@ export interface FileRouteTypes {
     | '/products'
     | '/subscription'
     | '/zakat'
+    | '/auth/callback'
     | '/admin/payments'
     | '/admin/settings'
     | '/admin/users'
@@ -180,6 +191,7 @@ export interface FileRouteTypes {
     | '/_auth/products'
     | '/_auth/subscription'
     | '/_auth/zakat'
+    | '/auth/callback'
     | '/_admin/admin/payments'
     | '/_admin/admin/settings'
     | '/_admin/admin/users'
@@ -191,6 +203,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRouteWithChildren
   LoginRoute: typeof LoginRoute
   RegisterRoute: typeof RegisterRoute
+  AuthCallbackRoute: typeof AuthCallbackRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -228,6 +241,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/callback': {
+      id: '/auth/callback'
+      path: '/auth/callback'
+      fullPath: '/auth/callback'
+      preLoaderRoute: typeof AuthCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_auth/zakat': {
@@ -346,6 +366,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRouteWithChildren,
   LoginRoute: LoginRoute,
   RegisterRoute: RegisterRoute,
+  AuthCallbackRoute: AuthCallbackRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -2,8 +2,10 @@
   "name": "@biztrack/api",
   "version": "0.0.1",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "wrangler dev",
+    "dev": "node --experimental-vm-modules src/dev.js",
+    "dev:wrangler": "wrangler dev",
     "build": "wrangler deploy --dry-run",
     "deploy": "wrangler deploy"
   },
@@ -13,6 +15,9 @@
     "hono": "^4.7.11"
   },
   "devDependencies": {
-    "wrangler": "^4.15.2"
+    "@hono/node-server": "^2.0.4",
+    "dotenv": "^17.4.2",
+    "wrangler": "^3.99.0",
+    "ws": "^8.21.0"
   }
 }
