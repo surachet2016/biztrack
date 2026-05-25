@@ -55,10 +55,13 @@ export function isSubscriptionActive(subscription) {
  */
 export function getPlanLimits(plan) {
   const limits = {
-    free:   { image: false, receiptAnalysis: false, voice: false },
-    basic:  { image: false, receiptAnalysis: false, voice: true },
-    pro:    { image: true,  receiptAnalysis: true,  voice: true },
-    annual: { image: true,  receiptAnalysis: true,  voice: true },
+    // free: text chat + income/expense tracking from text
+    free:   { image: false, receiptAnalysis: false, voice: false, textExtract: true },
+    // basic: + voice input
+    basic:  { image: false, receiptAnalysis: false, voice: true,  textExtract: true },
+    // pro: + image/receipt upload + receipt analysis
+    pro:    { image: true,  receiptAnalysis: true,  voice: true,  textExtract: true },
+    annual: { image: true,  receiptAnalysis: true,  voice: true,  textExtract: true },
   };
   return limits[plan] || limits.free;
 }

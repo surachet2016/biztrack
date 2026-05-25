@@ -207,7 +207,9 @@ function ChatPage() {
               {msg.attachment_url && (
                 <img src={msg.attachment_url} alt="" className="rounded-lg mb-2 max-w-full" />
               )}
-              <p className="whitespace-pre-wrap leading-relaxed">{msg.content}</p>
+              <p className="whitespace-pre-wrap leading-relaxed">
+                {msg.content.replace(/\[EXTRACT:.*?\]/gs, '').trim()}
+              </p>
               <p className={cn('text-xs mt-1.5', msg.role === 'user' ? 'text-green-100' : 'text-gray-300')}>
                 {new Date(msg.created_at).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })}
               </p>

@@ -24,13 +24,11 @@ function DashboardPage() {
   const { data: txData } = useQuery({
     queryKey: ['transactions', 'summary'],
     queryFn: () => api.get('/api/transactions?page=1'),
-    enabled: isPaid,
   });
 
   const { data: alertData } = useQuery({
     queryKey: ['product-alerts'],
     queryFn: () => api.get('/api/products/alerts'),
-    enabled: isPaid,
   });
 
   const income = txData?.totals?.income || 0;
@@ -73,50 +71,38 @@ function DashboardPage() {
         </div>
       )}
 
-      {/* Stats Cards */}
-      {isPaid ? (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <StatCard
-            icon={TrendingUp}
-            label="รายรับ"
-            value={formatBaht(income)}
-            iconCls="bg-green-100 text-green-600"
-            valueCls="text-green-600"
-          />
-          <StatCard
-            icon={TrendingDown}
-            label="รายจ่าย"
-            value={formatBaht(expense)}
-            iconCls="bg-red-50 text-red-500"
-            valueCls="text-red-500"
-          />
-          <StatCard
-            icon={Package}
-            label="กำไรสุทธิ"
-            value={formatBaht(net)}
-            iconCls={net >= 0 ? 'bg-blue-50 text-blue-600' : 'bg-red-50 text-red-500'}
-            valueCls={net >= 0 ? 'text-blue-600' : 'text-red-500'}
-          />
-          <StatCard
-            icon={AlertTriangle}
-            label="สินค้าขายไม่ออก"
-            value={alertData?.alerts?.length || 0}
-            suffix="รายการ"
-            iconCls="bg-amber-50 text-amber-500"
-            valueCls="text-amber-600"
-          />
-        </div>
-      ) : (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {['รายรับ', 'รายจ่าย', 'กำไรสุทธิ', 'สินค้าขายไม่ออก'].map((label) => (
-            <div key={label} className="bg-white rounded-2xl p-5 shadow-sm border border-gray-50">
-              <div className="w-10 h-10 rounded-xl bg-gray-100 mb-3" />
-              <p className="text-xs text-gray-400">{label}</p>
-              <div className="h-6 bg-gray-100 rounded-lg mt-1.5 w-2/3" />
-            </div>
-          ))}
-        </div>
-      )}
+      {/* Stats Cards — shown for all plans */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <StatCard
+          icon={TrendingUp}
+          label="รายรับ"
+          value={formatBaht(income)}
+          iconCls="bg-green-100 text-green-600"
+          valueCls="text-green-600"
+        />
+        <StatCard
+          icon={TrendingDown}
+          label="รายจ่าย"
+          value={formatBaht(expense)}
+          iconCls="bg-red-50 text-red-500"
+          valueCls="text-red-500"
+        />
+        <StatCard
+          icon={Package}
+          label="กำไรสุทธิ"
+          value={formatBaht(net)}
+          iconCls={net >= 0 ? 'bg-blue-50 text-blue-600' : 'bg-red-50 text-red-500'}
+          valueCls={net >= 0 ? 'text-blue-600' : 'text-red-500'}
+        />
+        <StatCard
+          icon={AlertTriangle}
+          label="สินค้าขายไม่ออก"
+          value={alertData?.alerts?.length || 0}
+          suffix="รายการ"
+          iconCls="bg-amber-50 text-amber-500"
+          valueCls="text-amber-600"
+        />
+      </div>
 
       {/* Quick actions */}
       <div className="grid md:grid-cols-2 gap-4">
@@ -140,7 +126,7 @@ function DashboardPage() {
           </span>
         </Link>
 
-        {isPaid && alertData?.alerts?.length > 0 ? (
+        {alertData?.alerts?.length > 0 ? (
           <div className="bg-amber-50 border border-amber-100 rounded-2xl p-6">
             <div className="flex items-center gap-3 mb-3">
               <div className="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center">
@@ -180,7 +166,7 @@ function DashboardPage() {
       </div>
 
       {/* Recent activity */}
-      {isPaid && txData?.transactions?.length > 0 && (
+      {txData?.transactions?.length > 0 && (
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-50">
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-bold text-gray-800 flex items-center gap-2">

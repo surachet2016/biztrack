@@ -111,18 +111,22 @@ chat.post('/', async (c) => {
     attachment_url: attachment_url || null,
   });
 
-  // Save assistant message
+  // Strip EXTRACT tag before saving to DB — keep chat history clean
+  const cleanContent = assistantContent.replace(/\[EXTRACT:.*?\]/g, '').trim();
+
+  // Save assistant message (clean content, no EXTRACT tag)
   const { data: savedMsg } = await supabase.from('chat_messages').insert({
     user_id: user.id,
     role: 'assistant',
-    content: assistantContent,
+    content: cleanContent,
     type: 'text',
   }).select().single();
 
-  // Extract and save transactions if present
+  // Extract and save transactions for ALL plans from text/voice,
+  // image upload restricted to Pro+ via limits.image check above
   const extractMatch = assistantContent.match(/\[EXTRACT:(.*?)\]/);
   let extractedTransaction = null;
-  if (extractMatch && limits.receiptAnalysis) {
+  if (extractMatch) {
     try {
       const tx = JSON.parse(extractMatch[1]);
       const { data: txData } = await supabase.from('transactions').insert({
@@ -144,7 +148,7 @@ chat.post('/', async (c) => {
   return c.json({
     message: savedMsg,
     extracted_transaction: extractedTransaction,
-    clean_content: assistantContent.replace(/\[EXTRACT:.*?\]/g, '').trim(),
+    clean_content: cleanContent,
   });
 });
 
