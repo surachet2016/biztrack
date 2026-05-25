@@ -1,4 +1,4 @@
-import { Link, useRouterState } from '@tanstack/react-router';
+import { Link, useRouterState, useNavigate } from '@tanstack/react-router';
 import { useAuth } from '@/hooks/use-auth.js';
 import { signOut } from '@/lib/auth-store.js';
 import { LayoutDashboard, MessageCircle, Package, Star, CreditCard, LogOut, Zap, Shield, ChevronRight } from 'lucide-react';
@@ -23,6 +23,12 @@ export default function Sidebar() {
   const { profile, subscription } = useAuth();
   const routerState = useRouterState();
   const pathname = routerState.location.pathname;
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await signOut();
+    navigate({ to: '/login', replace: true });
+  };
 
   const plan = subscription?.plan || 'free';
   const badge = PLAN_BADGES[plan] || PLAN_BADGES.free;
@@ -115,7 +121,7 @@ export default function Sidebar() {
           </div>
         </div>
         <button
-          onClick={signOut}
+          onClick={handleLogout}
           className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition"
         >
           <LogOut className="w-4 h-4" />

@@ -15,6 +15,7 @@ transactions.get('/', async (c) => {
     .select('*', { count: 'exact' })
     .eq('user_id', user.id)
     .order('date', { ascending: false })
+    .order('created_at', { ascending: false })
     .range(offset, offset + limit - 1);
 
   if (type) query = query.eq('type', type);
