@@ -8,13 +8,20 @@ auth.post('/profile', async (c) => {
   const supabase = c.get('supabase');
   const body = await c.req.json();
 
+  // Fetch existing profile to preserve role (admin role must not be overwritten on re-login)
+  const { data: existing } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single();
+
   const { data, error } = await supabase
     .from('profiles')
     .upsert({
       id: user.id,
       email: user.email,
       name: body.name || user.user_metadata?.full_name || '',
-      role: 'user',
+      role: existing?.role || 'user',   // preserve existing role, default 'user' for new profiles
       avatar_url: body.avatar_url || '',
     }, { onConflict: 'id' })
     .select()
