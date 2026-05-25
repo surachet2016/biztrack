@@ -1,13 +1,23 @@
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
 import { useAuth } from '@/hooks/use-auth.js';
 import AdminSidebar from '@/components/layout/AdminSidebar.jsx';
-import { getAuth } from '@/lib/auth-store.js';
+import { supabase } from '@/lib/supabase.js';
+import { api } from '@/lib/api.js';
 
 export const Route = createFileRoute('/_admin')({
-  beforeLoad: () => {
-    const { user, profile } = getAuth();
-    if (!user) throw redirect({ to: '/login' });
-    if (profile && profile.role !== 'admin') throw redirect({ to: '/dashboard' });
+  beforeLoad: async () => {
+    // Check session first
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) throw redirect({ to: '/login' });
+
+    // Fetch profile to check role
+    try {
+      const data = await api.get('/api/auth/me');
+      if (data?.profile?.role !== 'admin') throw redirect({ to: '/dashboard' });
+    } catch (e) {
+      if (e?.isRedirect) throw e;
+      throw redirect({ to: '/dashboard' });
+    }
   },
   component: AdminLayout,
 });

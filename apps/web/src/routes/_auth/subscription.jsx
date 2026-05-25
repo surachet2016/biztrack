@@ -21,7 +21,7 @@ function SubscriptionPage() {
 
   const { data: settingsData } = useQuery({
     queryKey: ['site-settings'],
-    queryFn: () => api.get('/api/admin/settings'),
+    queryFn: () => api.get('/api/settings'),
   });
 
   const settings = settingsData?.settings || {};

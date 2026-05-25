@@ -13,7 +13,7 @@ const SETTING_FIELDS = [
   { key: 'bank_name', label: 'ชื่อธนาคาร', type: 'text' },
   { key: 'bank_account_number', label: 'เลขบัญชี', type: 'text' },
   { key: 'bank_account_name', label: 'ชื่อบัญชี', type: 'text' },
-  { key: 'zakat_nisab_thb', label: 'Nisab (บาท)', type: 'number' },
+  { key: 'nisab_value_thb', label: 'Nisab (บาท)', type: 'number' },
   { key: 'contact_email', label: 'Email ติดต่อ', type: 'email' },
 ];
 

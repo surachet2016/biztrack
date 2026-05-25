@@ -20,6 +20,18 @@ app.use('*', (c, next) => corsMiddleware(c.env)(c, next));
 // Health check
 app.get('/', (c) => c.json({ status: 'ok', service: 'BizTrack API', version: '1.0.0' }));
 
+// Public settings (bank info for payment page) — auth required, not admin
+app.use('/api/settings', authMiddleware);
+app.get('/api/settings', async (c) => {
+  const supabase = c.get('supabase');
+  const { data } = await supabase.from('site_settings').select('*');
+  const settings = (data || []).reduce((acc, row) => {
+    acc[row.key] = row.value;
+    return acc;
+  }, {});
+  return c.json({ settings });
+});
+
 // Auth routes (require token for profile/me, public for nothing here)
 app.use('/api/auth/*', authMiddleware);
 app.route('/api/auth', authRoutes);
