@@ -4,6 +4,7 @@ export function corsMiddleware(env) {
   const allowed = [
     'http://localhost:5173',
     'https://biztrack.pages.dev',
+    'https://biztrack-35t.pages.dev',
     env.FRONTEND_URL,
   ].filter(Boolean);
 

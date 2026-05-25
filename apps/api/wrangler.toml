@@ -2,15 +2,13 @@ name = "biztrack-api"
 main = "src/index.js"
 compatibility_date = "2024-11-01"
 compatibility_flags = ["nodejs_compat"]
+workers_dev = true
 
 [vars]
-ENVIRONMENT = "development"
+ENVIRONMENT = "production"
+FRONTEND_URL = "https://biztrack-35t.pages.dev"
 
-# Production secrets (set via: wrangler secret put SECRET_NAME)
+# Secrets set via: wrangler secret put SECRET_NAME
 # SUPABASE_URL
 # SUPABASE_SERVICE_ROLE_KEY
 # OPENROUTER_API_KEY
-
-[env.production]
-name = "biztrack-api"
-vars = { ENVIRONMENT = "production" }
