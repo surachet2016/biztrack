@@ -21,6 +21,7 @@ import { Route as AuthProductsRouteImport } from './routes/_auth/products'
 import { Route as AuthDashboardRouteImport } from './routes/_auth/dashboard'
 import { Route as AuthChatRouteImport } from './routes/_auth/chat'
 import { Route as AdminAdminRouteImport } from './routes/_admin/admin'
+import { Route as AdminAdminIndexRouteImport } from './routes/_admin/admin.index'
 import { Route as AdminAdminUsersRouteImport } from './routes/_admin/admin.users'
 import { Route as AdminAdminSettingsRouteImport } from './routes/_admin/admin.settings'
 import { Route as AdminAdminPaymentsRouteImport } from './routes/_admin/admin.payments'
@@ -83,6 +84,11 @@ const AdminAdminRoute = AdminAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminAdminIndexRoute = AdminAdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminAdminRoute,
+} as any)
 const AdminAdminUsersRoute = AdminAdminUsersRouteImport.update({
   id: '/users',
   path: '/users',
@@ -113,12 +119,12 @@ export interface FileRoutesByFullPath {
   '/admin/payments': typeof AdminAdminPaymentsRoute
   '/admin/settings': typeof AdminAdminSettingsRoute
   '/admin/users': typeof AdminAdminUsersRoute
+  '/admin/': typeof AdminAdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
-  '/admin': typeof AdminAdminRouteWithChildren
   '/chat': typeof AuthChatRoute
   '/dashboard': typeof AuthDashboardRoute
   '/products': typeof AuthProductsRoute
@@ -128,6 +134,7 @@ export interface FileRoutesByTo {
   '/admin/payments': typeof AdminAdminPaymentsRoute
   '/admin/settings': typeof AdminAdminSettingsRoute
   '/admin/users': typeof AdminAdminUsersRoute
+  '/admin': typeof AdminAdminIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -146,6 +153,7 @@ export interface FileRoutesById {
   '/_admin/admin/payments': typeof AdminAdminPaymentsRoute
   '/_admin/admin/settings': typeof AdminAdminSettingsRoute
   '/_admin/admin/users': typeof AdminAdminUsersRoute
+  '/_admin/admin/': typeof AdminAdminIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -163,12 +171,12 @@ export interface FileRouteTypes {
     | '/admin/payments'
     | '/admin/settings'
     | '/admin/users'
+    | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/login'
     | '/register'
-    | '/admin'
     | '/chat'
     | '/dashboard'
     | '/products'
@@ -178,6 +186,7 @@ export interface FileRouteTypes {
     | '/admin/payments'
     | '/admin/settings'
     | '/admin/users'
+    | '/admin'
   id:
     | '__root__'
     | '/'
@@ -195,6 +204,7 @@ export interface FileRouteTypes {
     | '/_admin/admin/payments'
     | '/_admin/admin/settings'
     | '/_admin/admin/users'
+    | '/_admin/admin/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -292,6 +302,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAdminRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/_admin/admin/': {
+      id: '/_admin/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminAdminIndexRouteImport
+      parentRoute: typeof AdminAdminRoute
+    }
     '/_admin/admin/users': {
       id: '/_admin/admin/users'
       path: '/users'
@@ -320,12 +337,14 @@ interface AdminAdminRouteChildren {
   AdminAdminPaymentsRoute: typeof AdminAdminPaymentsRoute
   AdminAdminSettingsRoute: typeof AdminAdminSettingsRoute
   AdminAdminUsersRoute: typeof AdminAdminUsersRoute
+  AdminAdminIndexRoute: typeof AdminAdminIndexRoute
 }
 
 const AdminAdminRouteChildren: AdminAdminRouteChildren = {
   AdminAdminPaymentsRoute: AdminAdminPaymentsRoute,
   AdminAdminSettingsRoute: AdminAdminSettingsRoute,
   AdminAdminUsersRoute: AdminAdminUsersRoute,
+  AdminAdminIndexRoute: AdminAdminIndexRoute,
 }
 
 const AdminAdminRouteWithChildren = AdminAdminRoute._addFileChildren(
